@@ -105,7 +105,7 @@ function renderOptions(kind) {
 async function getSelectionOrMain() {
   return new Promise((resolve) => {
     chrome.runtime.sendMessage(
-      { type: "neuroread:getSelectionOrMain" },
+      { type: "fluentia:getSelectionOrMain" },
       resolve
     );
   });
@@ -187,7 +187,7 @@ async function runRewrite() {
   setBusy(true);
   chrome.runtime.sendMessage(
     {
-      type: "neuroread:transform",
+      type: "fluentia:transform",
       text: payloadText,
       disabilityType: kind,
       options: checkboxOptions,

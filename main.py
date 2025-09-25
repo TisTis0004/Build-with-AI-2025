@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from schemas import GenerateRequest, GenerateResponse
 from gemini_client import generate_accessible_text
 
-app = FastAPI(title="NeuroRead LLM Adapter", version="1.0.0")
+app = FastAPI(title="Fluentia LLM Adapter", version="1.0.0")
 
 # Allow calls from your extension/background (and localhost dev)
 app.add_middleware(
@@ -14,6 +14,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.post("/transform", response_model=GenerateResponse)
 async def transform(req: GenerateRequest) -> GenerateResponse:
@@ -26,6 +27,7 @@ async def transform(req: GenerateRequest) -> GenerateResponse:
         return GenerateResponse(text=output)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Model call failed: {e}")
+
 
 @app.get("/health")
 def health():
