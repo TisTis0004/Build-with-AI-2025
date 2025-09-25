@@ -34,34 +34,35 @@ def generate_accessible_text(text: str, disability_type: str, options: dict | No
     lines = [
         "Rewrite the following text to improve accessibility for the specified profile.",
         "IMMEDIATELY start with the adapted text; do not add an introduction or disclaimers.",
+        "Also, use the same language as the original text, do not translate to English",
     ]
 
     # Per-profile guidance (aligning with extension checkbox keys)
     if dt == "dyslexia":
-        _add(lines, "Use clear, concise wording and avoid complex clause chains.")
+        _add(lines, "This text should be read by someone with Dyslexia, make it easy to read for them. Use clear, concise wording and avoid complex clause chains.")
         if opts.get("fontMode"):
             _add(lines, "Optimize for readability (short paragraphs, generous spacing cues).")
 
     elif dt == "adhd":
-        _add(lines, "Make the text scannable and easy to follow.")
+        _add(lines, "This text should be read by someone with ADHD, make it easy to read for them.")
         if opts.get("chunking"):
-            _add(lines, "Chunk content into short paragraphs/sections with clear sub-ideas.")
+            _add(lines, "Take the original long text, and break it down into small chunks or paragraphs or sentences, so you make them easy to read for ADHD people.")
         if opts.get("bulletSummary"):
-            _add(lines, "Include a brief bullet summary of key points at the end.")
+            _add(lines, "At the end, write a brief bullet summary of key points.")
 
     elif dt == "aphasia":
-        _add(lines, "Use simple vocabulary and straightforward sentence structure.")
+        _add(lines, "This text should be read by someone with Aphasia, make it easy to read for them.")
         if opts.get("simplify"):
-            _add(lines, "Prefer common words; replace complex terms with simpler alternatives.")
+            _add(lines, "The user wants you to use common words; replace complex terms with simpler alternatives.")
         if opts.get("shortSentences"):
-            _add(lines, "Use short sentences; keep each sentence to one idea.")
+            _add(lines, "The user wants you to use short sentences; keep each sentence to one idea.")
 
     elif dt == "autism":
-        _add(lines, "Make the text direct, explicit, and literal where possible.")
+        _add(lines, "This text should be read by someone with Autism, make it easy to read for them. Make the text direct, explicit, and literal where possible.")
         if opts.get("idiomSimplification"):
-            _add(lines, "Detect idioms/figurative language and rewrite them with literal meaning.")
+            _add(lines, "The user want you to detect idioms/figurative language (which isn't easy to understand for them) and rewrite them with literal meaning.")
         if opts.get("useEmojis"):
-            _add(lines, "Optionally add light, clarifying emojis where helpful (do not overuse).")
+            _add(lines, "The user want you to add light, clarifying emojis where helpful (do not overuse).")
 
     else:
         # Fallback generic simplification
