@@ -44,11 +44,29 @@ def generate_accessible_text(text: str, disability_type: str, options: dict | No
             _add(lines, "Optimize for readability (short paragraphs, generous spacing cues).")
 
     elif dt == "adhd":
-        _add(lines, "This text should be read by someone with ADHD, make it easy to read for them.")
-        if opts.get("chunking"):
-            _add(lines, "Take the original long text, and break it down into small chunks or paragraphs or sentences, so you make them easy to read for ADHD people.")
-        if opts.get("bulletSummary"):
-            _add(lines, "At the end, write a brief bullet summary of key points.")
+        _add(lines, "This text should be read by someone with ADHD. Make it easy to scan and process. Be concise and concrete.")
+        if opts.get("chunking", True):
+            _add(lines, "Split the content into SMALL, titled chunks. Each chunk is 1–2 short, direct sentences—one idea per sentence.")
+        # ✨ add light emoji cues (at most 1 per title)
+        if opts.get("useEmojis", True):
+            _add(lines, "Add one light, relevant emoji to each CHUNK TITLE (max 1 emoji per title). Do not overuse.")
+        if opts.get("bulletSummary", True):
+            _add(lines, "After the chunks, include a 'Key Points' section as concise bullets (3–6 items, ≤ 15 words each). Put TWO line breaks after each bullet so each appears on its own line.")
+
+        # Section breaks for visual breathing room
+        _add(lines, "Insert '---' as a horizontal break between major sections.")
+
+        # 🔶 Highlight block markers for the summary (frontend will style)
+        _add(lines, "Wrap the 'Key Points' bullets between lines that say exactly '::: highlight' and ':::' (on their own lines). Example:\n::: highlight\n- Bullet 1\n\n- Bullet 2\n:::")
+
+        # Keep output predictable
+        lines += [
+            "OUTPUT RULES (MANDATORY):",
+            "Use the SAME language as the original.",
+            "Start directly with adapted content (no preface).",
+            "Do NOT add explanations about what you did.",
+        ]
+
 
     elif dt == "aphasia":
         _add(lines, "This text should be read by someone with Aphasia, make it easy to read for them.")

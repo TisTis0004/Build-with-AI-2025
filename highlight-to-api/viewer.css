@@ -13,6 +13,14 @@
   font-family: open;
   src: url("OpenDyslexic-Regular.otf");
 }
+.adhd-pre {
+  white-space: pre-line;
+  font: inherit;
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
 
 * {
   box-sizing: border-box;
@@ -21,6 +29,9 @@ html,
 body {
   height: 100%;
 }
+
+/* put anywhere in your CSS file */
+
 body {
   margin: 0;
   background: var(--bg);

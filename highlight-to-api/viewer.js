@@ -1,6 +1,7 @@
 // =============================
 // File: viewer.js
 // =============================
+
 function getParam(name) {
   const u = new URL(location.href);
   return u.searchParams.get(name) || "";
@@ -26,7 +27,6 @@ const original = getParam("text");
 const adapted = getParam("adapted");
 const disability = getParam("disability") || getParam("disease") || "dyslexia"; // backward compat
 const local = getJsonParam("local"); // e.g., { fontMode, lineHeight, letterSpacing }
-
 if (src) {
   srcA.textContent = src;
   srcA.href = src;
@@ -35,8 +35,17 @@ if (src) {
 }
 
 paneOriginal.textContent = original;
-paneAdapted.textContent =
-  adapted || "(no adapted text returned — showing fallback or original)";
+
+// ---- CHANGE START ----
+if (disability === "adhd") {
+  // for ADHD: preserve line breaks
+  paneAdapted.innerHTML = `<pre class="adhd-pre">${adapted || "(no adapted text returned — showing fallback or original)"}</pre>`;
+} else {
+  // for all other profiles: plain text
+  paneAdapted.textContent =
+    adapted || "(no adapted text returned — showing fallback or original)";
+}
+// ---- CHANGE END ----
 
 // Show ADAPTED by default
 let showingAdapted = true;
@@ -75,6 +84,9 @@ function applyStylingToAdapted() {
   }
 }
 applyStylingToAdapted();
+
+// … rest of your file unchanged …
+
 
 btnToggle.addEventListener("click", () => {
   showingAdapted = !showingAdapted;
