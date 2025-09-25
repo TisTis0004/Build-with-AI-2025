@@ -15,7 +15,7 @@ if not GEMINI_API_KEY:
 client = genai.Client()
 
 
-def generate_accessible_text(text: str, disability_type: str = "dyslexia") -> str:
+def generate_accessible_text(text: str, disability_type: str, options: dict | None = None) -> str:
     """
     Takes input text and disability type.
     For now, only 'dyslexia' is supported.
@@ -27,9 +27,46 @@ def generate_accessible_text(text: str, disability_type: str = "dyslexia") -> st
             "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
             f"Original text:\n{text}"
         )
-    else:
-        prompt = f"Rewrite this text for better accessibility ({disability_type}):\n{text}"
+    elif disability_type.lower() == "adhd":
+        prompt = ( 
+            "Rewrite the following text so it is easier for people with ADHD to read." 
+            "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
+            f"Original text:\n{text}"
+        )
 
+        if options:
+            if options.get("chunk_paragraphs"):
+                prompt += "- The user wants you to chunk the text into paragraphs.\n"
+            if options.get("bullet_summary"):
+                pormpt += "- The user wants to get a bullet summary of the text.\n"
+
+    elif disability_type.lower() == "aphasia":
+        prompt = ( 
+            "Rewrite the following text so it is easier for people with Aphasia to read." 
+            "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
+            f"Original text:\n{text}"
+        )
+
+        if options:
+            if options.get("simplify"):
+                prompt += "- The user wants to get a simplifed text of the original text.\n"
+            if options.get("short_sentences"):
+                pormpt += "- The user wants to get the text in short sentences.\n"
+
+    elif disability_type.lower() == "autism":
+        prompt = ( 
+            "Rewrite the following text so it is easier for people with Autism to read." 
+            "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
+            f"Original text:\n{text}"
+        )
+
+        if options:
+            if options.get("idioms"):
+                prompt += "- The user wants you to translate any idioms or play with words into their literal meaning.\n"
+            if options.get("emoji"):
+                pormpt += "- The user wants you to add emojis into different words in the text to get better visual experience.\n"
+
+        
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt

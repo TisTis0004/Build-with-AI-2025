@@ -1,15 +1,14 @@
 # main.py
 from fastapi import FastAPI, HTTPException
 from schemas import GenerateRequest, GenerateResponse
-from model import run_llm
-
+from gemini_client import generate_accessible_text
 app = FastAPI(title="LLM Backend (Adapter)", version="1.0.0")
 
 @app.post("/generate", response_model=GenerateResponse)
 async def generate(req: GenerateRequest) -> GenerateResponse:
     try:
         # DO NOT await a sync function
-        output = run_llm(req.text, req.type)
+        output = generate_accessible_text(req.text, req.type)
         return GenerateResponse(output_text=output)
     except Exception as e:
         # surface the error cleanly
