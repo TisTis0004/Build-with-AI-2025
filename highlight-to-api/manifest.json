@@ -1,0 +1,28 @@
+{
+"manifest_version": 3,
+"name": "Fluentia — Read & Adapt",
+"version": "1.0.0",
+"description": "Select text or main content, then rewrite/summarize or TTS for dyslexia, ADHD, aphasia, etc.",
+"permissions": ["activeTab", "scripting", "storage", "contextMenus"],
+"host_permissions": [
+"http://localhost:8000/*",
+"https://your-backend.example.com/*"
+],
+"action": { "default_popup": "popup.html" },
+"background": { "service_worker": "background.js" },
+"options_page": "options.html",
+"commands": {
+"open-selection": {
+"suggested_key": { "default": "Ctrl+Shift+Y", "mac": "Command+Shift+Y" },
+"description": "Open popup actions for current selection"
+}
+},
+"content_scripts": [
+{
+"matches": ["<all_urls>"],
+"js": ["content.js"],
+"css": ["content.css"],
+"run_at": "document_idle"
+}
+]
+}

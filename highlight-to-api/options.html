@@ -1,0 +1,53 @@
+<!-- =============================
+File: options.html
+============================= -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>NeuroRead Settings</title>
+  <style>
+    body{font-family:system-ui,sans-serif; padding:16px; max-width:780px}
+    .row{display:grid; grid-template-columns:200px 1fr; gap:10px; margin:10px 0}
+    input,select{padding:8px; border:1px solid #ccc; border-radius:8px}
+    button{padding:8px 12px; border-radius:8px}
+  </style>
+</head>
+<body>
+  <h2>Settings</h2>
+  <div class="row">
+    <label for="backend">Backend URL</label>
+    <input id="backend" placeholder="http://localhost:8000/transform" />
+  </div>
+  <div class="row">
+    <label for="profile">Default Profile</label>
+    <select id="profile">
+      <option value="dyslexia">Dyslexia</option>
+      <option value="adhd">ADHD</option>
+      <option value="aphasia">Aphasia</option>
+      <option value="autism">Autism</option>
+    </select>
+  </div>
+  <button id="save">Save</button>
+
+  <script>
+    const DEF = { backendUrl: "http://localhost:8000/transform", disability: "dyslexia" };
+    async function load(){
+      const v = await chrome.storage.sync.get({ backendUrl: DEF.backendUrl, disability: DEF.disability });
+      backend.value = v.backendUrl;
+      profile.value = v.disability;
+    }
+    async function save(){
+      await chrome.storage.sync.set({
+        backendUrl: backend.value.trim() || DEF.backendUrl,
+        disability: profile.value
+      });
+      alert('Saved');
+    }
+    const backend = document.getElementById('backend');
+    const profile = document.getElementById('profile');
+    document.getElementById('save').addEventListener('click', save);
+    load();
+  </script>
+</body>
+</html>

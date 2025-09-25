@@ -1,0 +1,17 @@
+:root { color-scheme: light dark; --bg: Canvas; --fg: CanvasText; --accent:#4f46e5; }
+*{box-sizing:border-box}
+body{margin:0; font:16px/1.6 system-ui, sans-serif; background:var(--bg); color:var(--fg)}
+.top{display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #ccc}
+.actions button{margin-left:8px; padding:8px 12px; border-radius:10px; border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer}
+main{display:grid; grid-template-columns:1fr 1fr; gap:0}
+.pane{padding:16px; max-width:52rem}
+
+
+/* Dyslexia-friendly class toggled per disease/options */
+.dyslexia-mode{ font-size: 18px; line-height: var(--dlh,1.8); letter-spacing: var(--dls,0.06em); word-spacing: 0.16em; background: #faf7ef; }
+.dyslexia-mode p{ margin: 0.6em 0 }
+
+
+/* Chunking for ADHD (simple demo) */
+.adhd-mode p{ margin: 0.9em 0; }
+.adhd-mode p::first-letter{ font-weight:600 }
