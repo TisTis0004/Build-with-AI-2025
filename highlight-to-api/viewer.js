@@ -25,7 +25,7 @@ const src = getParam("src");
 const original = getParam("text");
 const adapted = getParam("adapted");
 const disability = getParam("disability") || getParam("disease") || "dyslexia"; // backward compat
-const local = getJsonParam("local"); // e.g., { fontMode, fontFamily, lineHeight, letterSpacing }
+const local = getJsonParam("local"); // e.g., { fontMode, lineHeight, letterSpacing }
 
 if (src) {
   srcA.textContent = src;
@@ -44,30 +44,30 @@ paneAdapted.hidden = !showingAdapted;
 paneOriginal.hidden = showingAdapted;
 btnToggle.textContent = showingAdapted ? "Show Original" : "Show Adapted";
 
-// Apply per-disability styling ONLY to the ADAPTED pane (as requested)
+// Apply styling ONLY to the ADAPTED pane
 function applyStylingToAdapted() {
-  paneAdapted.classList.remove("dyslexia-mode", "adhd-mode", "autism-mode");
-  paneOriginal.classList.remove("dyslexia-mode", "adhd-mode", "autism-mode");
-  paneOriginal.style.removeProperty("--dlh");
-  paneOriginal.style.removeProperty("--dls");
-  paneOriginal.style.removeProperty("--dff");
-  paneAdapted.style.removeProperty("--dlh");
-  paneAdapted.style.removeProperty("--dls");
-  paneAdapted.style.removeProperty("--dff");
+  // Clear previous classes and inline vars
+  for (const el of [paneOriginal, paneAdapted]) {
+    el.classList.remove(
+      "dyslexia-mode",
+      "dyslexia-font",
+      "adhd-mode",
+      "autism-mode"
+    );
+    el.style.removeProperty("--dlh");
+    el.style.removeProperty("--dls");
+  }
 
   if (disability === "dyslexia") {
+    // Apply spacing/flow always
     paneAdapted.classList.add("dyslexia-mode");
     if (local?.lineHeight)
       paneAdapted.style.setProperty("--dlh", local.lineHeight);
     if (local?.letterSpacing)
       paneAdapted.style.setProperty("--dls", local.letterSpacing + "em");
 
-    // Apply custom font only if the user enabled the checkbox AND provided a name.
-    if (local?.fontMode && local?.fontFamily) {
-      paneAdapted.style.setProperty("--dff", local.fontFamily);
-      // Try to load the font if it's a well-known face installed; if it's a web font, the page hosting it
-      // should already provide @font-face, or the OS should have it. We avoid network loads here by design.
-    }
+    // Apply font only when checkbox was ON in popup
+    if (local?.fontMode) paneAdapted.classList.add("dyslexia-font");
   } else if (disability === "adhd") {
     paneAdapted.classList.add("adhd-mode");
   } else if (disability === "autism") {

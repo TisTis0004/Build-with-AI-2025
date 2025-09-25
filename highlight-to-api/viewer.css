@@ -110,17 +110,21 @@ body {
   margin: 0 0 0.9em;
 }
 
-/* Per-profile visual helpers (optional) */
+/* Dyslexia spacing/flow only (no background, no font here) */
 .dyslexia-mode {
   line-height: var(--dlh, 1.8);
   letter-spacing: var(--dls, 0.06em);
   word-spacing: 0.16em;
-  /* background removed to keep adapted text on a clean background */
   padding: 8px 10px;
   border-radius: 12px;
+}
+
+/* Dyslexia font is separate so it can be toggled independently */
+.dyslexia-font {
   font-family: open, system-ui, -apple-system, Segoe UI, Roboto,
     "Helvetica Neue", Arial, sans-serif;
 }
+
 .adhd-mode p {
   margin: 1em 0;
 }
