@@ -6,7 +6,6 @@
 const PRESETS = {
   dyslexia: [
     { key: "fontMode", label: "Dyslexia-friendly font/style", type: "checkbox", def: true },
-    // The following are numeric UI controls for local styling only; NOT sent to backend.
     { key: "lineHeight", label: "Line height", type: "number", step: 0.1, def: 1.8, localOnly: true },
     { key: "letterSpacing", label: "Letter spacing (em)", type: "number", step: 0.01, def: 0.06, localOnly: true }
   ],
@@ -26,6 +25,9 @@ const PRESETS = {
 
 const disabilitySel = document.getElementById("disability");
 const optsDiv = document.getElementById("opts");
+
+const btnRewrite = document.getElementById("rewrite");
+const spinner = document.getElementById("spinner");
 
 function renderOptions(kind) {
   optsDiv.innerHTML = "";
@@ -53,14 +55,14 @@ async function getSelectionOrMain() {
 function collectCheckboxOptions(kind) {
   const out = {};
   for (const opt of PRESETS[kind]) {
-    if (opt.type !== "checkbox") continue; // send only checkboxes
+    if (opt.type !== "checkbox") continue;
     const el = document.getElementById(`opt_${opt.key}`);
-    out[opt.key] = !!el.checked;
+    out[opt.key] = !!el?.checked;
   }
   return out;
 }
 
-// Local-only numeric styling values to pass to viewer (not to backend)
+// Local-only numeric styling to pass to viewer (not to backend)
 function collectLocalStyling(kind) {
   const style = {};
   for (const opt of PRESETS[kind]) {
@@ -79,38 +81,42 @@ function openViewer({ src, original, adapted, disability, localStyle }) {
   url.searchParams.set("text", original || "");
   url.searchParams.set("disability", disability);
 
-  // pass local styling (lineHeight/letterSpacing) for Dyslexia UI only
   if (localStyle && Object.keys(localStyle).length) {
     url.searchParams.set("local", btoa(unescape(encodeURIComponent(JSON.stringify(localStyle)))));
   }
-
   if (adapted) url.searchParams.set("adapted", adapted);
   chrome.tabs.create({ url: url.toString() });
 }
 
-async function runTransform(mode) {
+// Trim very long texts before sending to backend
+function trimForBackend(text, maxChars = 20000){
+  if (text.length <= maxChars) return text;
+  const slice = text.slice(0, maxChars);
+  const lastPunct = Math.max(slice.lastIndexOf('. '), slice.lastIndexOf('! '), slice.lastIndexOf('? '));
+  return slice.slice(0, lastPunct > 0 ? lastPunct + 1 : maxChars);
+}
+
+function setBusy(b){
+  for (const el of [btnRewrite, disabilitySel]) el.disabled = !!b;
+  spinner.classList.toggle("show", !!b);
+}
+
+async function runRewrite() {
   const kind = disabilitySel.value;
   const { ok, text, sourceUrl } = await getSelectionOrMain();
   if (!ok || !text) { alert("No text found. Select text or try a readable page."); return; }
 
   const checkboxOptions = collectCheckboxOptions(kind);
   const localStyle = collectLocalStyling(kind);
+  const payloadText = trimForBackend(text);
 
-  if (mode === "listen") {
-    // No backend call needed for TTS; just open viewer
-    openViewer({ src: sourceUrl, original: text, disability: kind, localStyle });
-    return;
-  }
-
-  // Send EXACTLY: highlighted text, disability type, and checkbox options
+  setBusy(true);
   chrome.runtime.sendMessage(
-    { type: "neuroread:transform", text, disabilityType: kind, options: checkboxOptions },
+    { type: "neuroread:transform", text: payloadText, disabilityType: kind, options: checkboxOptions },
     (res) => {
-      if (res?.ok && res.data?.text) {
-        openViewer({ src: sourceUrl, original: text, adapted: res.data.text, disability: kind, localStyle });
-      } else {
-        openViewer({ src: sourceUrl, original: text, adapted: res?.fallback || "", disability: kind, localStyle });
-      }
+      setBusy(false);
+      const adaptedText = res?.ok && res.data?.text ? res.data.text : (res?.fallback || "");
+      openViewer({ src: sourceUrl, original: text, adapted: adaptedText, disability: kind, localStyle });
     }
   );
 }
@@ -118,6 +124,4 @@ async function runTransform(mode) {
 // init
 renderOptions(disabilitySel.value);
 disabilitySel.addEventListener("change", () => renderOptions(disabilitySel.value));
-document.getElementById("rewrite").addEventListener("click", () => runTransform("rewrite"));
-document.getElementById("summarize").addEventListener("click", () => runTransform("summarize"));
-document.getElementById("listen").addEventListener("click", () => runTransform("listen"));
+btnRewrite.addEventListener("click", runRewrite);

@@ -1,6 +1,3 @@
-<!-- =============================
-File: options.html
-============================= -->
 <!doctype html>
 <html>
 <head>
@@ -30,24 +27,7 @@ File: options.html
   </div>
   <button id="save">Save</button>
 
-  <script>
-    const DEF = { backendUrl: "http://localhost:8000/transform", disability: "dyslexia" };
-    async function load(){
-      const v = await chrome.storage.sync.get({ backendUrl: DEF.backendUrl, disability: DEF.disability });
-      backend.value = v.backendUrl;
-      profile.value = v.disability;
-    }
-    async function save(){
-      await chrome.storage.sync.set({
-        backendUrl: backend.value.trim() || DEF.backendUrl,
-        disability: profile.value
-      });
-      alert('Saved');
-    }
-    const backend = document.getElementById('backend');
-    const profile = document.getElementById('profile');
-    document.getElementById('save').addEventListener('click', save);
-    load();
-  </script>
+  <!-- external script only (MV3 CSP compliant) -->
+  <script src="options.js"></script>
 </body>
 </html>

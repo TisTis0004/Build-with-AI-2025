@@ -1,27 +1,20 @@
-// Default values shown/used if nothing saved yet
-const DEF = {
-  backendUrl: "http://127.0.0.1:8000/generate",
-  disease: "dyslexia",
-  mock: false
-};
+// =============================
+// File: options.js
+// =============================
+const DEF = { backendUrl: "http://localhost:8000/transform", disability: "dyslexia" };
 
-async function load() {
-  const v = await chrome.storage.sync.get(DEF);
-  document.getElementById("backend").value = v.backendUrl;
-  document.getElementById("profile").value = v.disease;
-  document.getElementById("mock").checked = !!v.mock;
+async function load(){
+  const v = await chrome.storage.sync.get({ backendUrl: DEF.backendUrl, disability: DEF.disability });
+  document.getElementById('backend').value = v.backendUrl;
+  document.getElementById('profile').value = v.disability;
 }
 
-async function save() {
-  const backend = document.getElementById("backend").value.trim() || DEF.backendUrl;
-  const disease = document.getElementById("profile").value;
-  const mock = document.getElementById("mock").checked;
-
-  await chrome.storage.sync.set({ backendUrl: backend, disease, mock });
-  alert("Saved!");
+async function save(){
+  const backend = document.getElementById('backend').value.trim() || DEF.backendUrl;
+  const disability = document.getElementById('profile').value;
+  await chrome.storage.sync.set({ backendUrl: backend, disability });
+  alert('Saved');
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  load();
-  document.getElementById("save").addEventListener("click", save);
-});
+document.getElementById('save').addEventListener('click', save);
+load();

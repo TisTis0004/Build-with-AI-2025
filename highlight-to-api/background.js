@@ -4,8 +4,8 @@
 const DEFAULTS = {
   backendUrl: "http://localhost:8000/transform",
   disability: "dyslexia",
-  // Only include checkbox defaults here (booleans). Numeric sliders are NOT sent in options.
   options: {
+    // checkbox defaults only (booleans)
     dyslexia: { fontMode: true },
     adhd: { chunking: true, bulletSummary: true },
     aphasia: { simplify: true, shortSentences: true },
@@ -47,18 +47,26 @@ function openViewerWithPayload(payload) {
   chrome.tabs.create({ url });
 }
 
-// === Backend call ===
-// Must send ONLY: { text, disability_type, options }
+// === Backend call with timeout ===
 async function requestTransform({ text, disabilityType, options }) {
   const { backendUrl } = await chrome.storage.sync.get({ backendUrl: DEFAULTS.backendUrl });
+
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 30000); // 30s timeout
+
   const body = { text, disability_type: disabilityType, options };
-  const res = await fetch(backendUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) throw new Error("HTTP " + res.status);
-  return res.json();
+  try {
+    const res = await fetch(backendUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal: ctrl.signal
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } finally {
+    clearTimeout(t);
+  }
 }
 
 // Handle popup actions
@@ -67,6 +75,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg?.type === "neuroread:getSelectionOrMain") {
       const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
       if (!tab?.id) return sendResponse({ ok: false, error: "no-tab" });
+
       const [r1] = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => (window.getSelection()?.toString() || "").trim()
@@ -80,6 +89,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         text = r2?.result || "";
       }
       sendResponse({ ok: true, text, sourceUrl: tab.url || "" });
+      return;
     }
 
     if (msg?.type === "neuroread:transform") {
@@ -91,11 +101,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         });
         sendResponse({ ok: true, data });
       } catch (e) {
-        // simple local fallback: truncate to first 5 sentences
         const fallback = (msg.text || "").split(/(?<=[.!?])\s+/).slice(0, 5).join(" ");
         sendResponse({ ok: false, error: String(e), fallback });
       }
+      return;
     }
   })();
-  return true; // async
+  return true; // async response
 });
