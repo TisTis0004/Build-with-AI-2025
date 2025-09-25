@@ -2,103 +2,81 @@ import os
 from dotenv import load_dotenv
 from google import genai
 
-
 # Load .env file so GEMINI_API_KEY becomes available
 load_dotenv()
-
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
 if not GEMINI_API_KEY:
-    raise RuntimeError(
-        "GEMINI_API_KEY is missing. Did you set it in .env?")
+    raise RuntimeError("GEMINI_API_KEY is missing. Did you set it in .env?")
 
-client = genai.Client()
+# Pass the key explicitly (works even if env is set)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
+def _add(bullets, line):
+    if line:
+        bullets.append(f"- {line}")
 
 def generate_accessible_text(text: str, disability_type: str, options: dict | None = None) -> str:
     """
-    Takes input text and disability type.
-    For now, only 'dyslexia' is supported.
-    Returns Gemini's simplified output.
+    Accepts:
+      text: highlighted / extracted text (string)
+      disability_type: "dyslexia" | "adhd" | "aphasia" | "autism"
+      options: checkbox flags ONLY (booleans). Example:
+        ADHD:   {"chunking": true, "bulletSummary": true}
+        Aphasia:{"simplify": true, "shortSentences": true}
+        Autism: {"idiomSimplification": true, "useEmojis": true}
+        Dyslexia: {"fontMode": true}  # visual; still can influence prompt wording
+    Returns: model's adapted text (string)
     """
-    if disability_type.lower() == "dyslexia":
-        prompt = (
-            "Rewrite the following text so it is easier for people with dyslexia to read.\n"
-            "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
-            f"Original text:\n{text}"
-        )
-    elif disability_type.lower() == "adhd":
-        prompt = ( 
-            "Rewrite the following text so it is easier for people with ADHD to read." 
-            "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
-            f"Original text:\n{text}"
-        )
+    opts = options or {}
+    dt = (disability_type or "").strip().lower()
 
-        if options:
-            if options.get("chunk_paragraphs"):
-                prompt += "- The user wants you to chunk the text into paragraphs.\n"
-            if options.get("bullet_summary"):
-                pormpt += "- The user wants to get a bullet summary of the text.\n"
+    # Base instruction
+    lines = [
+        "Rewrite the following text to improve accessibility for the specified profile.",
+        "IMMEDIATELY start with the adapted text; do not add an introduction or disclaimers.",
+    ]
 
-    elif disability_type.lower() == "aphasia":
-        prompt = ( 
-            "Rewrite the following text so it is easier for people with Aphasia to read." 
-            "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
-            f"Original text:\n{text}"
-        )
+    # Per-profile guidance (aligning with extension checkbox keys)
+    if dt == "dyslexia":
+        _add(lines, "Use clear, concise wording and avoid complex clause chains.")
+        if opts.get("fontMode"):
+            _add(lines, "Optimize for readability (short paragraphs, generous spacing cues).")
 
-        if options:
-            if options.get("simplify"):
-                prompt += "- The user wants to get a simplifed text of the original text.\n"
-            if options.get("short_sentences"):
-                pormpt += "- The user wants to get the text in short sentences.\n"
+    elif dt == "adhd":
+        _add(lines, "Make the text scannable and easy to follow.")
+        if opts.get("chunking"):
+            _add(lines, "Chunk content into short paragraphs/sections with clear sub-ideas.")
+        if opts.get("bulletSummary"):
+            _add(lines, "Include a brief bullet summary of key points at the end.")
 
-    elif disability_type.lower() == "autism":
-        prompt = ( 
-            "Rewrite the following text so it is easier for people with Autism to read." 
-            "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
-            f"Original text:\n{text}"
-        )
+    elif dt == "aphasia":
+        _add(lines, "Use simple vocabulary and straightforward sentence structure.")
+        if opts.get("simplify"):
+            _add(lines, "Prefer common words; replace complex terms with simpler alternatives.")
+        if opts.get("shortSentences"):
+            _add(lines, "Use short sentences; keep each sentence to one idea.")
 
-        if options:
-            if options.get("idioms"):
-                prompt += "- The user wants you to translate any idioms or play with words into their literal meaning.\n"
-            if options.get("emoji"):
-                pormpt += "- The user wants you to add emojis into different words in the text to get better visual experience.\n"
+    elif dt == "autism":
+        _add(lines, "Make the text direct, explicit, and literal where possible.")
+        if opts.get("idiomSimplification"):
+            _add(lines, "Detect idioms/figurative language and rewrite them with literal meaning.")
+        if opts.get("useEmojis"):
+            _add(lines, "Optionally add light, clarifying emojis where helpful (do not overuse).")
 
-        
+    else:
+        # Fallback generic simplification
+        _add(lines, "Simplify and clarify while preserving meaning.")
+
+    # Build prompt
+    prompt = (
+        "\n".join(lines)
+        + "\n\n"
+        + "Original text:\n"
+        + text
+    )
+
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt
     )
     return response.text
-
-if __name__ == "__main__":
-    sample = """
-Palestinian President Mahmoud Abbas is set to address the United Nations General Assembly virtually on Thursday, at a time when questions loom over whether Washington will move to prevent 'Israel' from formally annexing parts of the occupied West Bank.
-
-Abbas, 89, will deliver his remarks just days after France hosted a high-profile summit in which several European nations extended recognition to the State of Palestine. His participation comes despite long-standing US opposition to his leadership. The Trump administration, in a rare diplomatic step, barred him and senior aides from traveling to New York for the annual gathering of world leaders.
-
-Instead, the General Assembly voted overwhelmingly to allow him to send a video message.
-
-Meanwhile, 'Israeli' Prime Minister Benjamin Netanyahu is scheduled to deliver his own address to the General Assembly on Friday.
-
-Netanyahu has repeatedly ruled out the establishment of a Palestinian state, while far-right members of his coalition have urged annexation of West Bank territories, a move critics say would close the door on any path toward independence.
-
-French President Emmanuel Macron, who has clashed with Washington over Palestinian statehood, revealed that US President Donald Trump nonetheless aligned with him in opposing annexation. “What President Trump told me yesterday was that the Europeans and Americans have the same position,” Macron said in a joint interview with France 24 and Radio France Internationale.
-
-At the same time, Trump’s personal friend-turned-envoy Steve Witkoff announced that the White House had presented a 21-point proposal to Arab and Islamic leaders aimed at ending the conflict.
-
-“I think it addresses Israeli concerns as well as the concerns of all the neighbors in the region,” he told the Concordia summit held alongside the UN gathering. “We’re hopeful, and I might say even confident, that in the coming days we’ll be able to announce some sort of breakthrough.”
-
-A senior US official confirmed to Agence France-Presse (AFP) that Trump is eager to bring the fighting to a swift end and that regional leaders signaled willingness to engage with the plan through Witkoff’s mediation.
-
-According to Macron, Washington’s proposal reflects aspects of a French blueprint that calls for Hamas to disarm and for an international stabilization force to be deployed. A French policy document reviewed by AFP outlines a phased transfer of security responsibilities in Gaza to a restructured Palestinian Authority once a ceasefire takes hold.
-
-Indonesian President Prabowo Subianto, who met with Trump during the discussions, indicated that his country was ready to contribute at least 20,000 troops if such a plan materializes.
-""".strip()
-    
-    result = generate_accessible_text(sample, "dyslexia")
-    print("---- Simplified ----")
-    print(result)
-
