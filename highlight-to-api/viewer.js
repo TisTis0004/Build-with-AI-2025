@@ -1,10 +1,17 @@
 // =============================
 // File: viewer.js
 // =============================
-function getParam(name){ const u=new URL(location.href); return u.searchParams.get(name)||""; }
-function getJsonParam(name){
-  const v=getParam(name);
-  try{ return JSON.parse(decodeURIComponent(escape(atob(v)))); }catch{ return {}; }
+function getParam(name) {
+  const u = new URL(location.href);
+  return u.searchParams.get(name) || "";
+}
+function getJsonParam(name) {
+  const v = getParam(name);
+  try {
+    return JSON.parse(decodeURIComponent(escape(atob(v))));
+  } catch {
+    return {};
+  }
 }
 
 const srcA = document.getElementById("src");
@@ -18,14 +25,57 @@ const src = getParam("src");
 const original = getParam("text");
 const adapted = getParam("adapted");
 const disability = getParam("disability") || getParam("disease") || "dyslexia"; // backward compat
-const local = getJsonParam("local"); // dyslexia local styling (lineHeight/letterSpacing)
+const local = getJsonParam("local"); // e.g., { fontMode, lineHeight, letterSpacing }
 
-if (src) { srcA.textContent = src; srcA.href = src; } else { srcA.textContent = "(unknown)"; }
+if (src) {
+  srcA.textContent = src;
+  srcA.href = src;
+} else {
+  srcA.textContent = "(unknown)";
+}
 
 paneOriginal.textContent = original;
-paneAdapted.textContent = adapted || "(no adapted text returned — showing fallback or original)";
+paneAdapted.textContent =
+  adapted || "(no adapted text returned — showing fallback or original)";
 
-let showingAdapted = false;
+// Show ADAPTED by default
+let showingAdapted = true;
+paneAdapted.hidden = !showingAdapted;
+paneOriginal.hidden = showingAdapted;
+btnToggle.textContent = showingAdapted ? "Show Original" : "Show Adapted";
+
+// Apply styling ONLY to the ADAPTED pane
+function applyStylingToAdapted() {
+  // Clear prior classes and inline vars
+  for (const el of [paneOriginal, paneAdapted]) {
+    el.classList.remove(
+      "dyslexia-flow",
+      "dyslexia-font",
+      "adhd-mode",
+      "autism-mode"
+    );
+    el.style.removeProperty("--dlh");
+    el.style.removeProperty("--dls");
+  }
+
+  if (disability === "dyslexia") {
+    // Always apply the spacing helpers
+    paneAdapted.classList.add("dyslexia-flow");
+    if (local?.lineHeight)
+      paneAdapted.style.setProperty("--dlh", local.lineHeight);
+    if (local?.letterSpacing)
+      paneAdapted.style.setProperty("--dls", local.letterSpacing + "em");
+
+    // Only apply the font when the checkbox is ON
+    if (local?.fontMode) paneAdapted.classList.add("dyslexia-font");
+  } else if (disability === "adhd") {
+    paneAdapted.classList.add("adhd-mode");
+  } else if (disability === "autism") {
+    paneAdapted.classList.add("autism-mode");
+  }
+}
+applyStylingToAdapted();
+
 btnToggle.addEventListener("click", () => {
   showingAdapted = !showingAdapted;
   paneAdapted.hidden = !showingAdapted;
@@ -33,33 +83,57 @@ btnToggle.addEventListener("click", () => {
   btnToggle.textContent = showingAdapted ? "Show Original" : "Show Adapted";
 });
 
-// Apply per-disability styling locally
-function applyStyling(el){
-  el.classList.remove("dyslexia-mode","adhd-mode","autism-mode");
-  // Dyslexia visual helpers
-  if (disability === "dyslexia"){
-    el.classList.add("dyslexia-mode");
-    if (local?.lineHeight) el.style.setProperty("--dlh", local.lineHeight);
-    if (local?.letterSpacing) el.style.setProperty("--dls", local.letterSpacing + "em");
-  }
-  if (disability === "adhd"){ el.classList.add("adhd-mode"); }
-  if (disability === "autism"){ el.classList.add("autism-mode"); }
-}
-applyStyling(paneOriginal);
-applyStyling(paneAdapted);
-
-// Simple Web Speech API TTS (client-side)
+// ------- Simple Web Speech API TTS (client-side) -------
 let utterance = null;
-function speak(text){
-  if (!window.speechSynthesis) { alert("TTS not supported in this browser"); return; }
-  if (utterance) { window.speechSynthesis.cancel(); utterance = null; }
-  utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = (disability === "aphasia") ? 0.9 : 1.0; // slower for aphasia
-  utterance.pitch = 1.0;
-  speechSynthesis.speak(utterance);
+let isSpeaking = false;
+
+function updateStopButton() {
+  // Stop button is only clickable when audio is playing
+  btnStop.disabled = !isSpeaking;
 }
+
+function speak(text) {
+  if (!window.speechSynthesis) {
+    alert("TTS not supported in this browser");
+    return;
+  }
+  if (utterance) {
+    window.speechSynthesis.cancel();
+    utterance = null;
+  }
+
+  utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = disability === "aphasia" ? 0.9 : 1.0; // slower for aphasia
+  utterance.pitch = 1.0;
+
+  utterance.onstart = () => {
+    isSpeaking = true;
+    updateStopButton();
+  };
+  utterance.onend = () => {
+    isSpeaking = false;
+    updateStopButton();
+  };
+  utterance.onerror = () => {
+    isSpeaking = false;
+    updateStopButton();
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
 btnTTS.addEventListener("click", () => {
   const t = showingAdapted && adapted ? adapted : original;
+  if (!t) return;
   speak(t);
 });
-btnStop.addEventListener("click", () => speechSynthesis.cancel());
+
+btnStop.addEventListener("click", () => {
+  if (!isSpeaking) return;
+  window.speechSynthesis.cancel();
+  isSpeaking = false;
+  updateStopButton();
+});
+
+// Initialize Stop button state
+updateStopButton();

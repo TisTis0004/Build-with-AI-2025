@@ -2,18 +2,31 @@
   color-scheme: light dark;
   --bg: Canvas;
   --fg: CanvasText;
-  --accent: #4f46e5;
+  /* Default color via hue — 0 means red hue. */
+  --accent-h: 0;
+  --accent: hsl(var(--accent-h), 70%, 52%);
   --muted: color-mix(in oklab, var(--fg), transparent 70%);
   --card: color-mix(in oklab, var(--bg), var(--fg) 3%);
 }
 
-* { box-sizing: border-box; }
-html, body { height: 100%; }
+@font-face {
+  font-family: open;
+  src: url("OpenDyslexic-Regular.otf");
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
 body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font: 16px/1.7 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+  font: 16px/1.7 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue",
+    Arial, sans-serif;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -21,7 +34,7 @@ body {
 
 .wrap {
   width: 100%;
-  max-width: 840px;       /* reasonable reading width */
+  max-width: 840px; /* reasonable reading width */
   padding: 20px 16px 40px;
 }
 
@@ -47,15 +60,20 @@ body {
 .source a {
   display: inline-block;
   max-width: 100%;
-  overflow-wrap: anywhere;   /* wraps long URLs to next line */
+  overflow-wrap: anywhere; /* wraps long URLs to next line */
   word-break: break-word;
   color: var(--accent);
   text-decoration: none;
 }
-.source a:hover { text-decoration: underline; }
+.source a:hover {
+  text-decoration: underline;
+}
 
 /* Buttons */
-.actions { display: flex; gap: 8px; }
+.actions {
+  display: flex;
+  gap: 8px;
+}
 .btn {
   padding: 8px 12px;
   border-radius: 10px;
@@ -69,7 +87,7 @@ body {
   color: var(--accent);
 }
 .btn:disabled {
-  opacity: .5;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -84,11 +102,13 @@ body {
 
 .pane {
   margin: 0 auto;
-  max-width: 70ch;       /* sweet spot for readability */
+  max-width: 70ch; /* sweet spot for readability */
   font-size: 18px;
 }
 
-.pane p { margin: 0 0 0.9em; }
+.pane p {
+  margin: 0 0 0.9em;
+}
 
 /* Per-profile visual helpers (optional) */
 .dyslexia-mode {
@@ -98,11 +118,22 @@ body {
   background: color-mix(in oklab, var(--card), #faf7ef 40%);
   padding: 8px 10px;
   border-radius: 12px;
+  /* The actual font family is set inline via --dff when provided */
+  font-family: open, system-ui, -apple-system, Segoe UI, Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
-.adhd-mode p { margin: 1.0em 0; }
-.adhd-mode p::first-letter { font-weight: 600; }
-.autism-mode { line-height: 1.75; }
+.adhd-mode p {
+  margin: 1em 0;
+}
+.adhd-mode p::first-letter {
+  font-weight: 600;
+}
+.autism-mode {
+  line-height: 1.75;
+}
 
 /* Make it feel book-like */
 .reader::selection,
-.pane::selection { background: color-mix(in oklab, var(--accent), transparent 70%); }
+.pane::selection {
+  background: color-mix(in oklab, var(--accent), transparent 70%);
+}
