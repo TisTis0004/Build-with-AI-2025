@@ -15,7 +15,7 @@ if not GEMINI_API_KEY:
 client = genai.Client()
 
 
-def generate_accessible_text(text: str, disability_type: str = "dyslexia") -> str:
+def generate_accessible_text(text: str, disability_type: str) -> str:
     """
     Takes input text and disability type.
     For now, only 'dyslexia' is supported.
@@ -27,7 +27,7 @@ def generate_accessible_text(text: str, disability_type: str = "dyslexia") -> st
             "- IMMEDIATLY start with the text, don't write any introductions.\n\n"
             f"Original text:\n{text}"
         )
-    else:
+    elif disability_type.lower() == "adhd":
         prompt = f"Rewrite this text for better accessibility ({disability_type}):\n{text}"
 
     response = client.models.generate_content(
