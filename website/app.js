@@ -4,6 +4,11 @@
 
 const DEFAULT_BACKEND = "http://localhost:8000/transform";
 
+// === ElevenLabs (frontend only; insecure for public use) ===
+const ELEVEN_API_KEY = "sk_fd8293850eac9f79ad8d1ad33d9d9a34b989b6e8297190f8";
+const ELEVEN_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // e.g., "Rachel" – change to your favorite voice
+const ELEVEN_TTS_URL = `https://api.elevenlabs.io/v1/text-to-speech/${ELEVEN_VOICE_ID}`;
+
 /** Minimal presets to keep your options UI working (extend if you like) */
 const PRESETS = {
   dyslexia: [
@@ -111,6 +116,7 @@ let readingInProgress = false;
 
 let speaking = false;
 let utterance = null;
+let ttsAudio = null; // HTMLAudioElement for ElevenLabs playback
 
 /* ----------------------------- DOM ------------------------------------- */
 
@@ -615,12 +621,26 @@ function handlePlay() {
     showNotification("No text available to play", "warning");
     return;
   }
-  speak(text);
+  speakEleven(text);
 }
 
 function handleStop() {
-  if (!speaking) return;
-  window.speechSynthesis.cancel();
+  if (!speaking && !ttsAudio) return;
+
+  // Stop ElevenLabs audio if playing
+  if (ttsAudio) {
+    try {
+      ttsAudio.pause();
+      ttsAudio.src = "";
+    } catch {}
+    ttsAudio = null;
+  }
+
+  // Also cancel browser TTS (fallback path)
+  if (window.speechSynthesis && speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+  }
+
   speaking = false;
   updateStopButton();
   if (elements.playBtn) elements.playBtn.disabled = false;
@@ -663,6 +683,75 @@ function speak(text) {
   };
 
   window.speechSynthesis.speak(utterance);
+}
+
+async function speakEleven(text) {
+  if (!text) {
+    showNotification("No text available to play", "warning");
+    return;
+  }
+  if (!ELEVEN_API_KEY) {
+    showNotification("Missing ELEVEN_API_KEY in app.js", "error");
+    return;
+  }
+
+  speaking = true;
+  updateStopButton();
+  if (elements.playBtn) elements.playBtn.disabled = true;
+
+  try {
+    const resp = await fetch(ELEVEN_TTS_URL, {
+      method: "POST",
+      headers: {
+        "xi-api-key": ELEVEN_API_KEY,
+        Accept: "audio/mpeg",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text,
+        model_id: "eleven_multilingual_v2",
+        voice_settings: { stability: 0.4, similarity_boost: 0.8 },
+      }),
+    });
+
+    if (!resp.ok) {
+      const msg = await resp.text().catch(() => "");
+      throw new Error(`TTS HTTP ${resp.status}: ${msg}`);
+    }
+
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+
+    ttsAudio = new Audio(url);
+    ttsAudio.onended = () => {
+      try {
+        URL.revokeObjectURL(url);
+      } catch {}
+      ttsAudio = null;
+      speaking = false;
+      updateStopButton();
+      if (elements.playBtn) elements.playBtn.disabled = false;
+    };
+    ttsAudio.onerror = () => {
+      try {
+        URL.revokeObjectURL(url);
+      } catch {}
+      ttsAudio = null;
+      speaking = false;
+      updateStopButton();
+      if (elements.playBtn) elements.playBtn.disabled = false;
+      showNotification("Audio playback failed", "error");
+    };
+
+    await ttsAudio.play();
+  } catch (err) {
+    console.error("ElevenLabs TTS failed:", err);
+    showNotification("TTS fell back to browser voice", "warning");
+    speaking = false;
+    if (elements.playBtn) elements.playBtn.disabled = false;
+    // Fallback to your existing browser TTS
+    speak(text);
+  }
 }
 
 function handleDownload() {
