@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluentia - AI-Powered Accessibility for Digital Reading</title>
+    <meta
+      name="description"
+      content="Transform any text to be accessible for dyslexia, ADHD, aphasia, and autism. Browser extension + PDF reader powered by Google Gemini AI."
+    />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- PDF.js for PDF functionality -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.js"
+      integrity="sha512-xXc1rQJm9FmoYt3wq0s5mU6Jjv0y3dBk0gqzPZb5oD1dLMe8x1i0l6+qNf9V+H3O5mTrq6zN3m7H7eY4nEj6Nw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <i class="fas fa-brain"></i>
+          <span>Fluentia</span>
+        </div>
+        <div class="nav-menu">
+          <a href="#demo" class="nav-link">Live Demo</a>
+          <a href="#features" class="nav-link">Features</a>
+          <a href="#profiles" class="nav-link">Accessibility</a>
+          <a href="#tech" class="nav-link">Technology</a>
+          <a href="#extension" class="nav-link">Extension</a>
+        </div>
+        <button class="nav-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-background">
+        <div class="floating-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+          <div class="shape shape-4"></div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1 class="hero-title">
+              Making Digital Content
+              <span class="gradient-text">Accessible for Everyone</span>
+            </h1>
+            <p class="hero-description">
+              Transform any text instantly with AI-powered adaptations for
+              dyslexia, ADHD, aphasia, and autism. Available as a browser
+              extension and PDF reader.
+            </p>
+            <div class="hero-stats">
+              <div class="stat">
+                <span class="stat-number">4</span>
+                <span class="stat-label">Accessibility Profiles</span>
+              </div>
+              <div class="stat">
+                <span class="stat-number">2</span>
+                <span class="stat-label">Platforms</span>
+              </div>
+              <div class="stat">
+                <span class="stat-number">∞</span>
+                <span class="stat-label">Possibilities</span>
+              </div>
+            </div>
+            <div class="hero-buttons">
+              <button class="btn btn-primary" onclick="scrollToDemo()">
+                <i class="fas fa-play"></i>
+                Try Live Demo
+              </button>
+              <button class="btn btn-secondary" onclick="scrollToExtension()">
+                <i class="fas fa-download"></i>
+                Get Extension
+              </button>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="demo-card">
+              <div class="demo-header">
+                <div class="demo-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <span class="demo-title">Fluentia in Action</span>
+              </div>
+              <div class="demo-content">
+                <div class="text-before">
+                  <h4>Original Text</h4>
+                  <p>
+                    "The implementation of sophisticated algorithms requires
+                    comprehensive understanding of complex methodologies."
+                  </p>
+                </div>
+                <div class="arrow-down">
+                  <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="text-after">
+                  <h4>For Dyslexia</h4>
+                  <p>
+                    Complex algorithms need clear methods.<br />
+                    You must understand these methods well.<br />
+                    This helps you use them correctly.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two Powerful Ways to Access Section -->
+    <section id="features" class="features">
+      <div class="container">
+        <div class="section-header">
+          <h2>Two Powerful Ways to Access</h2>
+          <p>Choose the platform that works best for your needs</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-globe"></i>
+            </div>
+            <h3>Browser Extension</h3>
+            <p>
+              Transform any highlighted text on any website instantly. Works
+              across all major browsers with a simple right-click or keyboard
+              shortcut.
+            </p>
+            <ul class="feature-list">
+              <li><i class="fas fa-check"></i> Works on any website</li>
+              <li><i class="fas fa-check"></i> Keyboard shortcut support</li>
+              <li><i class="fas fa-check"></i> Text-to-speech integration</li>
+              <li><i class="fas fa-check"></i> Smart content detection</li>
+            </ul>
+            <button class="btn btn-outline" onclick="scrollToExtension()">
+              Learn More
+            </button>
+          </div>
+          <div class="feature-card featured">
+            <div class="feature-badge">Featured</div>
+            <div class="feature-icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <h3>PDF Reader</h3>
+            <p>
+              Upload any PDF document and get an accessible version tailored to
+              your specific needs. Perfect for academic papers, reports, and
+              documents.
+            </p>
+            <ul class="feature-list">
+              <li><i class="fas fa-check"></i> Multi-page PDF support</li>
+              <li><i class="fas fa-check"></i> Download adapted text</li>
+              <li><i class="fas fa-check"></i> Visual accessibility options</li>
+              <li><i class="fas fa-check"></i> Progress tracking</li>
+            </ul>
+            <button class="btn btn-primary" onclick="scrollToDemo()">
+              Try PDF Reader
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Accessibility Profiles Section -->
+    <section id="profiles" class="profiles">
+      <div class="container">
+        <div class="section-header">
+          <h2>Accessibility Profiles</h2>
+          <p>Tailored adaptations for different cognitive needs</p>
+        </div>
+
+        <div class="profiles-grid">
+          <div class="profile-card">
+            <div class="profile-icon dyslexia">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h3>Dyslexia</h3>
+            <p>
+              Enhanced readability with clear formatting and dyslexia-friendly
+              fonts
+            </p>
+            <div class="profile-features">
+              <span class="feature-tag">Clear wording</span>
+              <span class="feature-tag">Font optimization</span>
+              <span class="feature-tag">Spacing control</span>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-icon adhd">
+              <i class="fas fa-bolt"></i>
+            </div>
+            <h3>ADHD</h3>
+            <p>
+              Chunked content with bullet summaries for better focus and
+              retention
+            </p>
+            <div class="profile-features">
+              <span class="feature-tag">Content chunking</span>
+              <span class="feature-tag">Bullet summaries</span>
+              <span class="feature-tag">Focus optimization</span>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-icon aphasia">
+              <i class="fas fa-comments"></i>
+            </div>
+            <h3>Aphasia</h3>
+            <p>
+              Simplified vocabulary and short sentences for easier comprehension
+            </p>
+            <div class="profile-features">
+              <span class="feature-tag">Simple words</span>
+              <span class="feature-tag">Short sentences</span>
+              <span class="feature-tag">Clear structure</span>
+            </div>
+          </div>
+
+          <div class="profile-card">
+            <div class="profile-icon autism">
+              <i class="fas fa-star"></i>
+            </div>
+            <h3>Autism</h3>
+            <p>Direct, literal language with emoji clarification for context</p>
+            <div class="profile-features">
+              <span class="feature-tag">Literal meaning</span>
+              <span class="feature-tag">Context emojis</span>
+              <span class="feature-tag">Explicit language</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Demo Section -->
+    <section id="demo" class="demo">
+      <div class="container">
+        <div class="section-header">
+          <h2>Experience Fluentia Live</h2>
+          <p>See how AI transforms complex text into accessible content</p>
+        </div>
+
+        <div class="demo-container">
+          <div class="demo-sidebar">
+            <div class="demo-card">
+              <h3><i class="fas fa-upload"></i> Upload PDF</h3>
+              <input
+                type="file"
+                id="pdfFile"
+                accept="application/pdf"
+                class="file-input"
+              />
+              <p id="fileInfo" class="file-info">No file selected</p>
+            </div>
+
+            <div class="demo-card">
+              <h3><i class="fas fa-user-cog"></i> Accessibility Profile</h3>
+              <select id="profile" class="profile-select">
+                <option value="dyslexia">🧠 Dyslexia</option>
+                <option value="adhd">⚡ ADHD</option>
+                <option value="aphasia">🗣️ Aphasia</option>
+                <option value="autism">🌟 Autism</option>
+              </select>
+
+              <div id="options" class="options-container"></div>
+            </div>
+
+            <button id="adaptBtn" class="btn btn-primary btn-large">
+              <i class="fas fa-magic"></i>
+              Transform Content
+            </button>
+
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div id="progressBar" class="progress-fill"></div>
+              </div>
+              <p id="progressText" class="progress-text">Ready to transform</p>
+            </div>
+          </div>
+
+          <div class="demo-main">
+            <div class="demo-controls">
+              <div class="view-toggle">
+                <button
+                  id="toggleView"
+                  class="btn btn-outline active"
+                  data-view="adapted"
+                >
+                  <i class="fas fa-eye"></i>
+                  Adapted View
+                </button>
+                <button
+                  id="originalView"
+                  class="btn btn-outline"
+                  data-view="original"
+                >
+                  <i class="fas fa-file-alt"></i>
+                  Original Text
+                </button>
+              </div>
+              <div class="action-buttons">
+                <button id="playBtn" class="btn btn-secondary">
+                  <i class="fas fa-play"></i>
+                  Play
+                </button>
+                <button id="stopBtn" class="btn btn-secondary" disabled>
+                  <i class="fas fa-stop"></i>
+                  Stop
+                </button>
+                <button id="downloadBtn" class="btn btn-secondary" disabled>
+                  <i class="fas fa-download"></i>
+                  Download
+                </button>
+              </div>
+            </div>
+
+            <div class="text-viewer">
+              <div id="originalText" class="text-pane" style="display: none">
+                <h4>Original Text</h4>
+                <div class="text-content" id="originalContent">
+                  <p class="placeholder">
+                    Upload a PDF file to see the original text here...
+                  </p>
+                </div>
+              </div>
+              <div id="adaptedText" class="text-pane">
+                <h4>Adapted Text</h4>
+                <div class="text-content" id="adaptedContent">
+                  <p class="placeholder">
+                    Select an accessibility profile and transform content to see
+                    the adapted text here...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section id="tech" class="technology">
+      <div class="container">
+        <div class="section-header">
+          <h2>Powered by Advanced AI</h2>
+          <p>Built with cutting-edge technology for maximum accessibility</p>
+        </div>
+
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tech-icon">
+              <i class="fab fa-google"></i>
+            </div>
+            <h3>Google Gemini 2.5 Flash</h3>
+            <p>
+              Advanced language model providing intelligent text adaptation with
+              context-aware transformations
+            </p>
+          </div>
+
+          <div class="tech-card">
+            <div class="tech-icon">
+              <i class="fas fa-server"></i>
+            </div>
+            <h3>FastAPI Backend</h3>
+            <p>
+              High-performance REST API with automatic documentation and CORS
+              support
+            </p>
+          </div>
+
+          <div class="tech-card">
+            <div class="tech-icon">
+              <i class="fas fa-puzzle-piece"></i>
+            </div>
+            <h3>Browser Extension</h3>
+            <p>
+              Chrome Manifest V3 extension with content script injection and
+              permission management
+            </p>
+          </div>
+
+          <div class="tech-card">
+            <div class="tech-icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <h3>PDF.js Integration</h3>
+            <p>
+              Client-side PDF parsing and text extraction with multi-page
+              support
+            </p>
+          </div>
+        </div>
+
+        <div class="architecture-diagram">
+          <h3>System Architecture</h3>
+          <div class="diagram">
+            <div class="diagram-node user">
+              <i class="fas fa-user"></i>
+              <span>User</span>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-node extension">
+              <i class="fas fa-puzzle-piece"></i>
+              <span>Browser Extension</span>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-node backend">
+              <i class="fas fa-server"></i>
+              <span>FastAPI Backend</span>
+            </div>
+            <div class="diagram-arrow">→</div>
+            <div class="diagram-node ai">
+              <i class="fab fa-google"></i>
+              <span>Gemini AI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Extension Section -->
+    <section id="extension" class="extension">
+      <div class="container">
+        <div class="extension-content">
+          <div class="extension-text">
+            <h2>Get the Browser Extension</h2>
+            <p>
+              Transform text on any website with a single click or keyboard
+              shortcut. The extension works seamlessly across all major websites
+              and platforms.
+            </p>
+
+            <div class="extension-features">
+              <div class="feature-item">
+                <i class="fas fa-mouse-pointer"></i>
+                <div>
+                  <h4>Click on the Extension Icon</h4>
+                  <p>
+                    Select any text and click on the extension icon to transform
+                    it instantly
+                  </p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-keyboard"></i>
+                <div>
+                  <h4>Keyboard Shortcut</h4>
+                  <p>Use Ctrl+Shift+Y (Cmd+Shift+Y on Mac) for quick access</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <i class="fas fa-volume-up"></i>
+                <div>
+                  <h4>Text-to-Speech</h4>
+                  <p>
+                    Listen to the adapted text with built-in TTS functionality
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="extension-actions">
+              <button class="btn btn-primary">
+                <i class="fas fa-download"></i>
+                Install Extension
+              </button>
+              <button class="btn btn-outline">
+                <i class="fas fa-code"></i>
+                View Source
+              </button>
+            </div>
+          </div>
+
+          <div class="extension-visual">
+            <div class="browser-mockup">
+              <div class="browser-header">
+                <div class="browser-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <div class="browser-url">
+                  news.example.com/technology-article
+                </div>
+              </div>
+              <div class="browser-content">
+                <div class="webpage-text">
+                  <h4>Breaking: AI Revolution in Healthcare</h4>
+                  <p class="article-text">
+                    <span>
+                      The implementation of sophisticated algorithms requires
+                      comprehensive understanding of complex methodologies and
+                      intricate computational processes...
+                    </span>
+                  </p>
+                  <p class="highlighted-text">
+                    These advanced systems demonstrate remarkable proficiency in
+                    processing vast amounts of medical data with unprecedented
+                    accuracy and efficiency.
+                  </p>
+                  <div class="extension-popup">
+                    <div class="popup-header">Fluentia - Transform Text</div>
+                    <div class="popup-options">
+                      <button class="popup-option">🧠 Dyslexia</button>
+                      <button class="popup-option">⚡ ADHD</button>
+                      <button class="popup-option">🗣️ Aphasia</button>
+                      <button class="popup-option">🌟 Autism</button>
+                    </div>
+                    <div class="popup-actions">
+                      <button class="popup-action">🔊 Read Aloud</button>
+                      <button class="popup-action">📋 Copy Text</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <div class="footer-logo">
+              <i class="fas fa-brain"></i>
+              <span>Fluentia</span>
+            </div>
+            <p>
+              Making digital content accessible for everyone through AI-powered
+              text transformation.
+            </p>
+          </div>
+
+          <div class="footer-links">
+            <div class="footer-section">
+              <h4>Product</h4>
+              <a href="#demo">Live Demo</a>
+              <a href="#features">Features</a>
+              <a href="#extension">Browser Extension</a>
+            </div>
+
+            <div class="footer-section">
+              <h4>Accessibility</h4>
+              <a href="#profiles">Profiles</a>
+              <a href="#tech">Technology</a>
+              <a href="#">Documentation</a>
+            </div>
+
+            <div class="footer-section">
+              <h4>Resources</h4>
+              <a href="#">GitHub</a>
+              <a href="#">API Docs</a>
+              <a href="#">Support</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>&copy; 2025 Fluentia. Built for accessibility and inclusion.</p>
+          <div class="footer-social">
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+  </body>
+</html>
