@@ -1,0 +1,20 @@
+🏆 Judging Criteria
+
+- Innovation & Creativity
+- Use of Generative AI
+- Technical Execution
+- User Experience
+- Impact & Usefulness
+- Presentation & Pitching
+- Ethical Use of AI
+- Team Collaboration
+- Use of Google Tools (will give extra points)
+
+================================================
+
+To-do:
+- PDF reader positioning and scroll
+- Presentation .pptx same website theme 
+**(must be short in order to show the website and extension)**
+- Prepare pitching speech regarding the criteria above
+(ethical usage of AI!! they might ask thoroughly about it, cause disabilities)
