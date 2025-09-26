@@ -2,23 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Fluentia - AI-Powered Accessibility for Digital Reading</title>
     <meta
       name="description"
-      content="Transform any text to be accessible for dyslexia, ADHD, aphasia, and autism. Browser extension + PDF reader powered by Google Gemini AI."
+      content="Transform any text to be accessible for dyslexia, ADHD, aphasia, and autism. Browser extension + PDF reader."
     />
 
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css" />
 
-    <!-- PDF.js for PDF functionality -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.7.76/pdf.min.js"
-      integrity="sha512-xXc1rQJm9FmoYt3wq0s5mU6Jjv0y3dBk0gqzPZb5oD1dLMe8x1i0l6+qNf9V+H3O5mTrq6zN3m7H7eY4nEj6Nw=="
-      crossorigin="anonymous"
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       referrerpolicy="no-referrer"
-    ></script>
+    />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,12 +27,20 @@
       rel="stylesheet"
     />
 
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    <!-- PDF.js UMD (v3) — load BEFORE app.js -->
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script>
+      // Set the worker to the same CDN (do this ONCE, here)
+      if (window.pdfjsLib && pdfjsLib.GlobalWorkerOptions) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+      }
+    </script>
+
+    <!-- Your app after pdf.js -->
+    <script src="app.js" defer></script>
   </head>
+
   <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -604,6 +611,5 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="app.js"></script>
   </body>
 </html>

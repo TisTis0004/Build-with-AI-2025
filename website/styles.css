@@ -77,7 +77,11 @@
   --transition-normal: 250ms ease-in-out;
   --transition-slow: 350ms ease-in-out;
 }
-
+@font-face {
+  font-family: open-dyslexic;
+  src: url("OpenDyslexic-Regular.otf") format("opentype");
+  font-display: swap;
+}
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -839,9 +843,12 @@ section {
 
 /* Accessibility-specific styles */
 .dyslexia-mode {
-  line-height: 1.8;
-  letter-spacing: 0.06em;
+  line-height: var(--line-height, 1.8);
+  letter-spacing: var(--letter-spacing, 0.06em);
   word-spacing: 0.16em;
+}
+.dyslexia-font {
+  font-family: open-dyslexic, var(--font-family);
 }
 
 .adhd-mode p {
@@ -860,6 +867,14 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.page-block {
+  margin-bottom: 1.25rem;
+}
+
+.page-block h4 {
+  margin: 0.25rem 0 0.5rem;
+  font-weight: 600;
 }
 
 /* Profiles Section */
