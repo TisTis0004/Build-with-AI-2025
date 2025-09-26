@@ -18,3 +18,4 @@ To-do:
 **(must be short in order to show the website and extension)**
 - Prepare pitching speech regarding the criteria above
 (ethical usage of AI!! they might ask thoroughly about it, cause disabilities)
+- TTS 11 labs (Optional)
