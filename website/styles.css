@@ -106,6 +106,26 @@ html {
   font-size: 16px;
 }
 
+:root {
+  --font-ar-en: "Noto Sans Arabic", "IBM Plex Sans Arabic", "Cairo", "Tajawal",
+                system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* Class we will toggle on the PDF panes when profile ≠ dyslexia */
+.ar-en-font {
+  font-family: var(--font-ar-en);
+}
+
+/* Ensure <pre> uses the pane’s font and wraps nicely */
+.text-content pre {
+  font-family: inherit;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* If you use <pre class="pre-wrap"> in HTML, make sure it wraps */
+.pre-wrap { white-space: pre-wrap; word-break: break-word; }
+
 body {
   font-family: var(--font-family);
   font-size: var(--font-size-base);
@@ -550,6 +570,10 @@ p {
 /* Section Styles */
 section {
   padding: var(--space-3xl) 0;
+}
+
+:is(#demo, #features, #profiles, #tech, #extension) {
+  scroll-margin-top: 90px; /* a bit larger than 70px for comfort */
 }
 
 .section-header {
@@ -1058,9 +1082,6 @@ section {
 }
 
 /* Extension Section */
-.extension {
-  background: var(--gray-900);
-}
 
 .extension-content {
   display: grid;
@@ -1226,6 +1247,8 @@ section {
 }
 
 .popup-header {
+  /* width: 4rem; */
+  visibility: hidden;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: var(--space-sm);

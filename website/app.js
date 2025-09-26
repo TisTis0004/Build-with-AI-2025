@@ -150,6 +150,32 @@ document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
 });
 
+
+window.scrollToDemo = function () {
+  const el = document.querySelector("#demo");
+  if (el) {
+    // close mobile menu if open
+    if (document.querySelector(".nav-menu")?.classList.contains("open")) {
+      document.querySelector(".nav-menu").classList.remove("open");
+    }
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
+window.scrollToExtension = function () {
+  const el = document.querySelector("#extension");
+  if (el) {
+    if (document.querySelector(".nav-menu")?.classList.contains("open")) {
+      document.querySelector(".nav-menu").classList.remove("open");
+    }
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+};
+
+
+
+
+
 function initializeApp() {
   // Default backend
   if (elements.backendUrl) {
@@ -541,6 +567,17 @@ function applyLocalStyling() {
 
   // Reset to base class
   pane.className = "text-content";
+  const orig = elements.originalContent;
+
+// Remove any previous font flag first
+if (orig) orig.classList.remove("ar-en-font");
+pane.classList.remove("ar-en-font");
+
+// For all profiles EXCEPT dyslexia, use an Arabic+Latin friendly font
+if (currentProfile !== "dyslexia") {
+  if (orig) orig.classList.add("ar-en-font");
+  pane.classList.add("ar-en-font");
+}
 
   if (currentProfile === "dyslexia") {
     pane.classList.add("dyslexia-mode");
