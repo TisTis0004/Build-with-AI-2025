@@ -9,6 +9,35 @@ const ELEVEN_API_KEY = "sk_fd8293850eac9f79ad8d1ad33d9d9a34b989b6e8297190f8";
 const ELEVEN_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // e.g., "Rachel" – change to your favorite voice
 const ELEVEN_TTS_URL = `https://api.elevenlabs.io/v1/text-to-speech/${ELEVEN_VOICE_ID}`;
 
+// --- Performance tuning (frontend-only) ---
+const ELEVEN_MODEL_ID = "eleven_multilingual_v2"; // try "eleven_turbo_v2_5" if your plan allows
+const ELEVEN_OUTPUT_FORMAT = "mp3_44100_64"; // smaller = faster (e.g., "mp3_22050_32")
+const CHUNK_CHARS = 160; // 120–180 is a good sweet spot
+const STREAM_OPT_LEVEL = 4; // lower latency if supported
+
+// Warm-up one tiny request on load to avoid cold-start delay
+(async function warmUpElevenLabs() {
+  try {
+    await fetch(ELEVEN_TTS_URL, {
+      method: "POST",
+      headers: {
+        "xi-api-key": ELEVEN_API_KEY,
+        Accept: "audio/mpeg",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text: "ok",
+        model_id: ELEVEN_MODEL_ID,
+        output_format: ELEVEN_OUTPUT_FORMAT,
+        optimize_streaming_latency: STREAM_OPT_LEVEL,
+        voice_settings: { stability: 0.4, similarity_boost: 0.8 },
+      }),
+    });
+  } catch (_) {
+    /* ignore warm-up errors */
+  }
+})();
+
 /** Minimal presets to keep your options UI working (extend if you like) */
 const PRESETS = {
   dyslexia: [
@@ -117,6 +146,7 @@ let readingInProgress = false;
 let speaking = false;
 let utterance = null;
 let ttsAudio = null; // HTMLAudioElement for ElevenLabs playback
+let manualStop = false; // suppress onerror when user manually stops
 
 /* ----------------------------- DOM ------------------------------------- */
 
@@ -156,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
 });
 
-
 window.scrollToDemo = function () {
   const el = document.querySelector("#demo");
   if (el) {
@@ -177,10 +206,6 @@ window.scrollToExtension = function () {
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 };
-
-
-
-
 
 function initializeApp() {
   // Default backend
@@ -575,15 +600,15 @@ function applyLocalStyling() {
   pane.className = "text-content";
   const orig = elements.originalContent;
 
-// Remove any previous font flag first
-if (orig) orig.classList.remove("ar-en-font");
-pane.classList.remove("ar-en-font");
+  // Remove any previous font flag first
+  if (orig) orig.classList.remove("ar-en-font");
+  pane.classList.remove("ar-en-font");
 
-// For all profiles EXCEPT dyslexia, use an Arabic+Latin friendly font
-if (currentProfile !== "dyslexia") {
-  if (orig) orig.classList.add("ar-en-font");
-  pane.classList.add("ar-en-font");
-}
+  // For all profiles EXCEPT dyslexia, use an Arabic+Latin friendly font
+  if (currentProfile !== "dyslexia") {
+    if (orig) orig.classList.add("ar-en-font");
+    pane.classList.add("ar-en-font");
+  }
 
   if (currentProfile === "dyslexia") {
     pane.classList.add("dyslexia-mode");
@@ -621,18 +646,19 @@ function handlePlay() {
     showNotification("No text available to play", "warning");
     return;
   }
-  speakEleven(text);
+  speakElevenChunked(text);
 }
 
 function handleStop() {
   if (!speaking && !ttsAudio) return;
+  manualStop = true;
 
   // Stop ElevenLabs audio if playing
   if (ttsAudio) {
     try {
       ttsAudio.pause();
-      ttsAudio.src = "";
     } catch {}
+    // do NOT set src = "" (can fire onerror in some browsers)
     ttsAudio = null;
   }
 
@@ -644,6 +670,11 @@ function handleStop() {
   speaking = false;
   updateStopButton();
   if (elements.playBtn) elements.playBtn.disabled = false;
+
+  // reset manualStop shortly after
+  setTimeout(() => {
+    manualStop = false;
+  }, 50);
 }
 
 function updateStopButton() {
@@ -740,7 +771,9 @@ async function speakEleven(text) {
       speaking = false;
       updateStopButton();
       if (elements.playBtn) elements.playBtn.disabled = false;
-      showNotification("Audio playback failed", "error");
+      if (!manualStop) {
+        console.warn("Audio playback error");
+      }
     };
 
     await ttsAudio.play();
@@ -752,6 +785,141 @@ async function speakEleven(text) {
     // Fallback to your existing browser TTS
     speak(text);
   }
+}
+
+function splitTextIntoChunks(text, maxChars = CHUNK_CHARS) {
+  const parts = text.replace(/\s+/g, " ").split(/(?<=[.!?])\s+/);
+  const chunks = [];
+  let buf = "";
+  for (const part of parts) {
+    if ((buf + " " + part).trim().length <= maxChars) {
+      buf = (buf ? buf + " " : "") + part;
+    } else {
+      if (buf) chunks.push(buf);
+      if (part.length <= maxChars) {
+        buf = part;
+      } else {
+        for (let i = 0; i < part.length; i += maxChars) {
+          chunks.push(part.slice(i, i + maxChars));
+        }
+        buf = "";
+      }
+    }
+  }
+  if (buf) chunks.push(buf);
+  return chunks;
+}
+
+async function fetchChunkAudioBlob(text) {
+  const resp = await fetch(ELEVEN_TTS_URL, {
+    method: "POST",
+    headers: {
+      "xi-api-key": ELEVEN_API_KEY,
+      Accept: "audio/mpeg",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      text,
+      model_id: ELEVEN_MODEL_ID,
+      output_format: ELEVEN_OUTPUT_FORMAT,
+      optimize_streaming_latency: STREAM_OPT_LEVEL,
+      voice_settings: { stability: 0.35, similarity_boost: 0.75 },
+    }),
+  });
+  if (!resp.ok) {
+    const msg = await resp.text().catch(() => "");
+    throw new Error(`TTS HTTP ${resp.status}: ${msg}`);
+  }
+  return await resp.blob();
+}
+
+async function speakElevenChunked(text) {
+  const chunks = splitTextIntoChunks(text, CHUNK_CHARS);
+  if (!chunks.length) return;
+
+  manualStop = false;
+  speaking = true;
+  updateStopButton();
+  if (elements.playBtn) elements.playBtn.disabled = true;
+
+  // prefetch first chunk
+  let i = 0;
+  let nextBlobPromise = fetchChunkAudioBlob(chunks[i]);
+
+  while (i < chunks.length) {
+    if (manualStop) break;
+
+    let blob;
+    try {
+      // wait for current chunk blob
+      blob = await nextBlobPromise;
+    } catch (err) {
+      console.warn("Chunk fetch failed; falling back for this chunk:", err);
+      // Per-chunk fallback to browser TTS
+      speak(chunks[i]);
+      await new Promise((res) => {
+        const t = setInterval(() => {
+          if (!speechSynthesis.speaking) {
+            clearInterval(t);
+            res();
+          }
+        }, 120);
+      });
+      i++;
+      if (i < chunks.length) {
+        nextBlobPromise = fetchChunkAudioBlob(chunks[i]);
+      }
+      continue;
+    }
+
+    // start prefetching the next one before we play current
+    i++;
+    if (i < chunks.length) {
+      nextBlobPromise = fetchChunkAudioBlob(chunks[i]);
+    }
+
+    // play current blob
+    const url = URL.createObjectURL(blob);
+    await new Promise((resolve) => {
+      if (ttsAudio) {
+        try {
+          ttsAudio.pause();
+        } catch {}
+        ttsAudio = null;
+      }
+      ttsAudio = new Audio(url);
+
+      ttsAudio.onended = () => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {}
+        ttsAudio = null;
+        if (!manualStop) resolve();
+      };
+      ttsAudio.onerror = () => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch {}
+        ttsAudio = null;
+        if (manualStop) return resolve();
+        console.warn("Audio element error; continuing...");
+        resolve();
+      };
+
+      const p = ttsAudio.play();
+      if (p && typeof p.catch === "function") {
+        p.catch((e) => {
+          if (manualStop) return resolve();
+          console.warn("Audio play() rejected; continuing...", e);
+          resolve();
+        });
+      }
+    });
+  }
+
+  speaking = false;
+  updateStopButton();
+  if (elements.playBtn) elements.playBtn.disabled = false;
 }
 
 function handleDownload() {
