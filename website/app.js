@@ -5,8 +5,8 @@
 const DEFAULT_BACKEND = "http://localhost:8000/transform";
 
 // === ElevenLabs (frontend only; insecure for public use) ===
-const ELEVEN_API_KEY = "sk_fd8293850eac9f79ad8d1ad33d9d9a34b989b6e8297190f8";
-const ELEVEN_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // e.g., "Rachel" – change to your favorite voice
+const ELEVEN_API_KEY = "...";
+const ELEVEN_VOICE_ID = "21m00Tcm4TlvDq8ikWAM";
 const ELEVEN_TTS_URL = `https://api.elevenlabs.io/v1/text-to-speech/${ELEVEN_VOICE_ID}`;
 
 // --- Performance tuning (frontend-only) ---
