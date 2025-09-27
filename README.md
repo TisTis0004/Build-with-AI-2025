@@ -2,10 +2,6 @@
 
 > **Making digital content accessible for everyone through intelligent text transformation**
 
-[![Demo](https://img.shields.io/badge/Demo-Live%20Website-blue?style=for-the-badge)](https://your-demo-url.com)
-[![Extension](https://img.shields.io/badge/Extension-Chrome%20Web%20Store-green?style=for-the-badge)](https://chrome.google.com/webstore)
-[![Backend](https://img.shields.io/badge/Backend-FastAPI-red?style=for-the-badge)](http://localhost:8000)
-
 ## 🎯 Project Overview
 
 **Fluentia** is a comprehensive accessibility solution that transforms any digital text to be more readable and accessible for people with different cognitive conditions. Built with Google Gemini AI, it offers both a browser extension for web content and a PDF reader for documents.
@@ -17,7 +13,6 @@
 - **📄 PDF Reader**: Upload and process PDF documents with accessibility adaptations
 - **🤖 AI-Powered**: Uses Google Gemini 2.5 Flash for intelligent text transformation
 - **🔊 Text-to-Speech**: Built-in TTS with profile-specific speech rates
-- **📱 Responsive Design**: Works seamlessly on desktop and mobile devices
 
 ## 🚀 Quick Start
 
@@ -85,7 +80,7 @@
 ### Browser Extension
 
 1. **Highlight any text** on any website
-2. **Right-click** and select "Transform with Fluentia" or use `Ctrl+Shift+Y`
+2. **Click on the extension**
 3. **Choose an accessibility profile** (Dyslexia, ADHD, Aphasia, or Autism)
 4. **View the transformed text** in a popup
 5. **Listen with TTS** or copy the adapted content
@@ -228,28 +223,7 @@ Health check endpoint.
 - **Card-based layouts** with subtle shadows and borders
 - **Icon integration** with Font Awesome for visual clarity
 
-## 🚀 Demo Scenarios
-
-### For Judges
-
-1. **Try the Live Demo**
-
-   - Upload a complex academic paper or technical document
-   - Switch between different accessibility profiles
-   - Compare original vs. adapted text side-by-side
-
-2. **Test the Browser Extension**
-
-   - Visit any news website or blog
-   - Highlight a paragraph of text
-   - Use the extension to see real-time transformation
-
-3. **Explore Accessibility Features**
-   - Test text-to-speech with different profiles
-   - Adjust dyslexia font settings
-   - Experience the visual adaptations
-
-## 🏆 Hackathon Impact
+## Global Impact
 
 ### Problem Solved
 
@@ -281,7 +255,7 @@ Health check endpoint.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+We welcome contributions! Thank you in advance!
 
 ### Development Setup
 
@@ -295,10 +269,6 @@ cd website
 python -m http.server 8001
 ```
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - **Google Gemini AI** for powerful language processing capabilities
@@ -309,9 +279,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-- **Project Lead**: [Your Name](mailto:your.email@example.com)
-- **GitHub**: [@yourusername](https://github.com/yourusername)
-- **LinkedIn**: [Your Profile](https://linkedin.com/in/yourprofile)
+- **Project Lead**: [Fares Hatahet](mailto:fareshatahet491@outlook.com)
+- **GitHub**: [TisTis](https://github.com/TisTis0004)
+- **LinkedIn**: [Fares Hatahet](https://www.linkedin.com/in/fares-hatahet/)
+---
+- **Team Memeber**: [Ahmed Al-Hmouz](mailto:kakashialhmouz@gmail.com)
+- **GitHub**: [Ahmad Al-Hmouz](https://github.com/KshKsh0)
+- **LinkeIn**: [Ahmed Al-Hmouz](https://www.linkedin.com/in/ahmed-al-hmouz-571a92304/)
+---
+- **Team Member**: [Adnan Sawalha](mailto:adnan.sawalha04@gmail.com)
+- **GitHub**: [Adnan Sawalha](https://github.com/Adnan-Sawalha)
+- **LinkedIn**: [Adnan Sawalha](https://www.linkedin.com/in/adnan-sawalha/)
 
 ---
 
